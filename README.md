@@ -115,15 +115,9 @@ Terminals : All words in capital letters represent terminals .
 
 The generated parser is in java . The lexer it interacts with is generated with Jflex which can generate lexer that can interact with BYACC/J generated parser .
 
-Parser has :
-2 shift/reduce conflicts, 2 reduce/reduce conflicts and a total of 
-46 terminals,
-36 nonterminals
-80 grammar rules, 
-150 states.
 
 Parser Lexer Interface : 
- The lexer has an auto generated function yylex() that returns the next token . The yylex function can be called to test the lexer . 
+The lexer has an auto generated function yylex() that returns the next token . The yylex function can be called to test the lexer . 
 
 Error Handling : 
 Not done very elegantly . The parser will just report syntax error . The particular statement with error can be predicted by tracking upto which line the tokens have been printed. The parser doesn’t continue parsing after the error occurs.   
@@ -135,7 +129,8 @@ TYPE CHECKER ( SEMANTIC ANALYSER ) :
       • Error reporting via suitable exceptions while type checking , with localization
       of error upto feature level .
       • Generating sequence of actions performed while type checking the program.
-      Features Not Implemented :
+
+Features Not Implemented :
       • Inheritance
       • self and SELF_TYPE
       
@@ -152,4 +147,6 @@ HOW TO USE :
 
       java -jar CoolSemanticAnalyser.jar source_code_filename.txt
 
+CODE GENERATOR 
+  Code generator isn't linked with above phases yet and is implemented for few constructs only.
 
