@@ -126,8 +126,7 @@ Not done very elegantly . The parser will just report syntax error . The particu
 
 TYPE CHECKER ( SEMANTIC ANALYSER ) :
       • Type Checking of most of Cool language constructs .
-      • Error reporting via suitable exceptions while type checking , with localization
-      of error upto feature level .
+      • Error reporting via suitable exceptions while type checking , with localization of error upto feature level .
       • Generating sequence of actions performed while type checking the program.
 
 Features Not Implemented :
