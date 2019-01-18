@@ -1,0 +1,1554 @@
+   0  $accept : program $end
+
+   1  program : classes
+
+   2  classes : clazz classes
+   3          | clazz
+
+   4  clazz : KEYWORD_CLASS TYPE classdefinition
+
+   5  classdefinition : classbody
+   6                  | KEYWORD_INHERITS TYPE classbody
+
+   7  classbody : SYM_LBRACE features SYM_RBRACE
+
+   8  features : feature SYM_SEMICOLON features
+   9           |
+
+  10  feature : attribute
+  11          | method
+
+  12  method : ID SYM_LPAREN formalparams SYM_RPAREN SYM_COLON TYPE SYM_LBRACE expr SYM_RBRACE
+
+  13  formalparams : formal formalparam
+  14               |
+
+  15  formalparam : SYM_COMMA formal formalparam
+  16              |
+
+  17  formal : ID SYM_COLON TYPE
+
+  18  attribute : ID SYM_COLON TYPE initialization
+
+  19  initialization : SYM_ASSIGNMENT valExpr
+  20                 |
+
+  21  expr : ID SYM_ASSIGNMENT valExpr
+  22       | expr scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN
+  23       | functionCall
+  24       | KEYWORD_IF valExpr KEYWORD_THEN expr KEYWORD_ELSE expr KEYWORD_FI
+  25       | KEYWORD_WHILE valExpr KEYWORD_LOOP expr KEYWORD_POOL
+  26       | SYM_LBRACE statements SYM_RBRACE
+  27       | KEYWORD_LET attribute attribs KEYWORD_IN expr
+  28       | KEYWORD_CASE valExpr KEYWORD_OF cases KEYWORD_ESAC
+  29       | KEYWORD_NEW TYPE
+  30       | KEYWORD_ISVOID expr
+  31       | SYM_LPAREN expr SYM_RPAREN
+  32       | valExpr
+
+  33  functionCall : ID SYM_LPAREN arguments SYM_RPAREN
+
+  34  valExpr : valExpr1 valExprRest
+
+  35  valExpr1 : KEYWORD_NEW TYPE
+  36           | functionCall
+  37           | ID
+  38           | STRING_LITERAL
+  39           | INTEGER
+  40           | KEYWORD_TRUE
+  41           | KEYWORD_FALSE
+  42           | OP_INT_NOT valExpr1
+  43           | KEYWORD_NOT valExpr1
+
+  44  valExprRest : arithematicOperator valExpr
+  45              | comparisonOperator valExpr
+  46              |
+
+  47  arithematicOperator : OP_ADD
+  48                      | OP_MUL
+  49                      | OP_DIVIDE
+  50                      | OP_SUB
+
+  51  comparisonOperator : OP_LESSTHAN
+  52                     | OP_LESSTHANEQUAL
+  53                     | OP_EQUAL
+
+  54  cases : caze cases
+  55        | caze
+
+  56  caze : ID SYM_COLON TYPE OP_CASE_COMP valExpr SYM_SEMICOLON
+
+  57  attribs :
+  58          | SYM_COMMA attribute attribs
+
+  59  scope : SYM_SCOPE_OP TYPE
+  60        |
+
+  61  arguments : valExpr arg
+  62            |
+
+  63  arg : SYM_COMMA valExpr arg
+  64      |
+
+  65  statements : statement statements
+  66             | statement
+
+  67  statement : expr SYM_SEMICOLON
+
+state 0
+	$accept : . program $end  (0)
+
+	KEYWORD_CLASS  shift 1
+	.  error
+
+	program  goto 2
+	classes  goto 3
+	clazz  goto 4
+
+
+state 1
+	clazz : KEYWORD_CLASS . TYPE classdefinition  (4)
+
+	TYPE  shift 5
+	.  error
+
+
+state 2
+	$accept : program . $end  (0)
+
+	$end  accept
+
+
+state 3
+	program : classes .  (1)
+
+	.  reduce 1
+
+
+state 4
+	classes : clazz . classes  (2)
+	classes : clazz .  (3)
+
+	KEYWORD_CLASS  shift 1
+	$end  reduce 3
+
+	classes  goto 6
+	clazz  goto 4
+
+
+state 5
+	clazz : KEYWORD_CLASS TYPE . classdefinition  (4)
+
+	KEYWORD_INHERITS  shift 7
+	SYM_LBRACE  shift 8
+	.  error
+
+	classdefinition  goto 9
+	classbody  goto 10
+
+
+state 6
+	classes : clazz classes .  (2)
+
+	.  reduce 2
+
+
+state 7
+	classdefinition : KEYWORD_INHERITS . TYPE classbody  (6)
+
+	TYPE  shift 11
+	.  error
+
+
+state 8
+	classbody : SYM_LBRACE . features SYM_RBRACE  (7)
+	features : .  (9)
+
+	ID  shift 12
+	SYM_RBRACE  reduce 9
+
+	features  goto 13
+	feature  goto 14
+	attribute  goto 15
+	method  goto 16
+
+
+state 9
+	clazz : KEYWORD_CLASS TYPE classdefinition .  (4)
+
+	.  reduce 4
+
+
+state 10
+	classdefinition : classbody .  (5)
+
+	.  reduce 5
+
+
+state 11
+	classdefinition : KEYWORD_INHERITS TYPE . classbody  (6)
+
+	SYM_LBRACE  shift 8
+	.  error
+
+	classbody  goto 17
+
+
+state 12
+	method : ID . SYM_LPAREN formalparams SYM_RPAREN SYM_COLON TYPE SYM_LBRACE expr SYM_RBRACE  (12)
+	attribute : ID . SYM_COLON TYPE initialization  (18)
+
+	SYM_LPAREN  shift 18
+	SYM_COLON  shift 19
+	.  error
+
+
+state 13
+	classbody : SYM_LBRACE features . SYM_RBRACE  (7)
+
+	SYM_RBRACE  shift 20
+	.  error
+
+
+state 14
+	features : feature . SYM_SEMICOLON features  (8)
+
+	SYM_SEMICOLON  shift 21
+	.  error
+
+
+state 15
+	feature : attribute .  (10)
+
+	.  reduce 10
+
+
+state 16
+	feature : method .  (11)
+
+	.  reduce 11
+
+
+state 17
+	classdefinition : KEYWORD_INHERITS TYPE classbody .  (6)
+
+	.  reduce 6
+
+
+state 18
+	method : ID SYM_LPAREN . formalparams SYM_RPAREN SYM_COLON TYPE SYM_LBRACE expr SYM_RBRACE  (12)
+	formalparams : .  (14)
+
+	ID  shift 22
+	SYM_RPAREN  reduce 14
+
+	formalparams  goto 23
+	formal  goto 24
+
+
+state 19
+	attribute : ID SYM_COLON . TYPE initialization  (18)
+
+	TYPE  shift 25
+	.  error
+
+
+state 20
+	classbody : SYM_LBRACE features SYM_RBRACE .  (7)
+
+	.  reduce 7
+
+
+state 21
+	features : feature SYM_SEMICOLON . features  (8)
+	features : .  (9)
+
+	ID  shift 12
+	SYM_RBRACE  reduce 9
+
+	features  goto 26
+	feature  goto 14
+	attribute  goto 15
+	method  goto 16
+
+
+state 22
+	formal : ID . SYM_COLON TYPE  (17)
+
+	SYM_COLON  shift 27
+	.  error
+
+
+state 23
+	method : ID SYM_LPAREN formalparams . SYM_RPAREN SYM_COLON TYPE SYM_LBRACE expr SYM_RBRACE  (12)
+
+	SYM_RPAREN  shift 28
+	.  error
+
+
+state 24
+	formalparams : formal . formalparam  (13)
+	formalparam : .  (16)
+
+	SYM_COMMA  shift 29
+	SYM_RPAREN  reduce 16
+
+	formalparam  goto 30
+
+
+state 25
+	attribute : ID SYM_COLON TYPE . initialization  (18)
+	initialization : .  (20)
+
+	SYM_ASSIGNMENT  shift 31
+	KEYWORD_IN  reduce 20
+	SYM_SEMICOLON  reduce 20
+	SYM_COMMA  reduce 20
+
+	initialization  goto 32
+
+
+state 26
+	features : feature SYM_SEMICOLON features .  (8)
+
+	.  reduce 8
+
+
+state 27
+	formal : ID SYM_COLON . TYPE  (17)
+
+	TYPE  shift 33
+	.  error
+
+
+state 28
+	method : ID SYM_LPAREN formalparams SYM_RPAREN . SYM_COLON TYPE SYM_LBRACE expr SYM_RBRACE  (12)
+
+	SYM_COLON  shift 34
+	.  error
+
+
+state 29
+	formalparam : SYM_COMMA . formal formalparam  (15)
+
+	ID  shift 22
+	.  error
+
+	formal  goto 35
+
+
+state 30
+	formalparams : formal formalparam .  (13)
+
+	.  reduce 13
+
+
+state 31
+	initialization : SYM_ASSIGNMENT . valExpr  (19)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	valExpr  goto 44
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 32
+	attribute : ID SYM_COLON TYPE initialization .  (18)
+
+	.  reduce 18
+
+
+state 33
+	formal : ID SYM_COLON TYPE .  (17)
+
+	.  reduce 17
+
+
+state 34
+	method : ID SYM_LPAREN formalparams SYM_RPAREN SYM_COLON . TYPE SYM_LBRACE expr SYM_RBRACE  (12)
+
+	TYPE  shift 47
+	.  error
+
+
+state 35
+	formalparam : SYM_COMMA formal . formalparam  (15)
+	formalparam : .  (16)
+
+	SYM_COMMA  shift 29
+	SYM_RPAREN  reduce 16
+
+	formalparam  goto 48
+
+
+state 36
+	functionCall : ID . SYM_LPAREN arguments SYM_RPAREN  (33)
+	valExpr1 : ID .  (37)
+
+	SYM_LPAREN  shift 49
+	KEYWORD_LOOP  reduce 37
+	KEYWORD_POOL  reduce 37
+	KEYWORD_THEN  reduce 37
+	KEYWORD_ELSE  reduce 37
+	KEYWORD_FI  reduce 37
+	KEYWORD_IN  reduce 37
+	KEYWORD_OF  reduce 37
+	OP_ADD  reduce 37
+	OP_SUB  reduce 37
+	OP_MUL  reduce 37
+	OP_DIVIDE  reduce 37
+	OP_LESSTHAN  reduce 37
+	OP_LESSTHANEQUAL  reduce 37
+	OP_EQUAL  reduce 37
+	OP_DOT  reduce 37
+	SYM_RBRACE  reduce 37
+	SYM_RPAREN  reduce 37
+	SYM_SEMICOLON  reduce 37
+	SYM_SCOPE_OP  reduce 37
+	SYM_COMMA  reduce 37
+
+
+state 37
+	valExpr1 : INTEGER .  (39)
+
+	.  reduce 39
+
+
+state 38
+	valExpr1 : STRING_LITERAL .  (38)
+
+	.  reduce 38
+
+
+state 39
+	valExpr1 : KEYWORD_NEW . TYPE  (35)
+
+	TYPE  shift 50
+	.  error
+
+
+state 40
+	valExpr1 : KEYWORD_NOT . valExpr1  (43)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	functionCall  goto 45
+	valExpr1  goto 51
+
+
+state 41
+	valExpr1 : KEYWORD_TRUE .  (40)
+
+	.  reduce 40
+
+
+state 42
+	valExpr1 : KEYWORD_FALSE .  (41)
+
+	.  reduce 41
+
+
+state 43
+	valExpr1 : OP_INT_NOT . valExpr1  (42)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	functionCall  goto 45
+	valExpr1  goto 52
+
+
+state 44
+	initialization : SYM_ASSIGNMENT valExpr .  (19)
+
+	.  reduce 19
+
+
+state 45
+	valExpr1 : functionCall .  (36)
+
+	.  reduce 36
+
+
+state 46
+	valExpr : valExpr1 . valExprRest  (34)
+	valExprRest : .  (46)
+
+	OP_ADD  shift 53
+	OP_SUB  shift 54
+	OP_MUL  shift 55
+	OP_DIVIDE  shift 56
+	OP_LESSTHAN  shift 57
+	OP_LESSTHANEQUAL  shift 58
+	OP_EQUAL  shift 59
+	KEYWORD_LOOP  reduce 46
+	KEYWORD_POOL  reduce 46
+	KEYWORD_THEN  reduce 46
+	KEYWORD_ELSE  reduce 46
+	KEYWORD_FI  reduce 46
+	KEYWORD_IN  reduce 46
+	KEYWORD_OF  reduce 46
+	OP_DOT  reduce 46
+	SYM_RBRACE  reduce 46
+	SYM_RPAREN  reduce 46
+	SYM_SEMICOLON  reduce 46
+	SYM_SCOPE_OP  reduce 46
+	SYM_COMMA  reduce 46
+
+	valExprRest  goto 60
+	arithematicOperator  goto 61
+	comparisonOperator  goto 62
+
+
+state 47
+	method : ID SYM_LPAREN formalparams SYM_RPAREN SYM_COLON TYPE . SYM_LBRACE expr SYM_RBRACE  (12)
+
+	SYM_LBRACE  shift 63
+	.  error
+
+
+state 48
+	formalparam : SYM_COMMA formal formalparam .  (15)
+
+	.  reduce 15
+
+
+state 49
+	functionCall : ID SYM_LPAREN . arguments SYM_RPAREN  (33)
+	arguments : .  (62)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_RPAREN  reduce 62
+
+	valExpr  goto 64
+	arguments  goto 65
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 50
+	valExpr1 : KEYWORD_NEW TYPE .  (35)
+
+	.  reduce 35
+
+
+state 51
+	valExpr1 : KEYWORD_NOT valExpr1 .  (43)
+
+	.  reduce 43
+
+
+state 52
+	valExpr1 : OP_INT_NOT valExpr1 .  (42)
+
+	.  reduce 42
+
+
+state 53
+	arithematicOperator : OP_ADD .  (47)
+
+	.  reduce 47
+
+
+state 54
+	arithematicOperator : OP_SUB .  (50)
+
+	.  reduce 50
+
+
+state 55
+	arithematicOperator : OP_MUL .  (48)
+
+	.  reduce 48
+
+
+state 56
+	arithematicOperator : OP_DIVIDE .  (49)
+
+	.  reduce 49
+
+
+state 57
+	comparisonOperator : OP_LESSTHAN .  (51)
+
+	.  reduce 51
+
+
+state 58
+	comparisonOperator : OP_LESSTHANEQUAL .  (52)
+
+	.  reduce 52
+
+
+state 59
+	comparisonOperator : OP_EQUAL .  (53)
+
+	.  reduce 53
+
+
+state 60
+	valExpr : valExpr1 valExprRest .  (34)
+
+	.  reduce 34
+
+
+state 61
+	valExprRest : arithematicOperator . valExpr  (44)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	valExpr  goto 66
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 62
+	valExprRest : comparisonOperator . valExpr  (45)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	valExpr  goto 67
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 63
+	method : ID SYM_LPAREN formalparams SYM_RPAREN SYM_COLON TYPE SYM_LBRACE . expr SYM_RBRACE  (12)
+
+	ID  shift 68
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_WHILE  shift 69
+	KEYWORD_IF  shift 70
+	KEYWORD_LET  shift 71
+	KEYWORD_CASE  shift 72
+	KEYWORD_NEW  shift 73
+	KEYWORD_ISVOID  shift 74
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_LBRACE  shift 75
+	SYM_LPAREN  shift 76
+	.  error
+
+	expr  goto 77
+	valExpr  goto 78
+	functionCall  goto 79
+	valExpr1  goto 46
+
+
+state 64
+	arguments : valExpr . arg  (61)
+	arg : .  (64)
+
+	SYM_COMMA  shift 80
+	SYM_RPAREN  reduce 64
+
+	arg  goto 81
+
+
+state 65
+	functionCall : ID SYM_LPAREN arguments . SYM_RPAREN  (33)
+
+	SYM_RPAREN  shift 82
+	.  error
+
+
+state 66
+	valExprRest : arithematicOperator valExpr .  (44)
+
+	.  reduce 44
+
+
+state 67
+	valExprRest : comparisonOperator valExpr .  (45)
+
+	.  reduce 45
+
+
+state 68
+	expr : ID . SYM_ASSIGNMENT valExpr  (21)
+	functionCall : ID . SYM_LPAREN arguments SYM_RPAREN  (33)
+	valExpr1 : ID .  (37)
+
+	SYM_LPAREN  shift 49
+	SYM_ASSIGNMENT  shift 83
+	KEYWORD_POOL  reduce 37
+	KEYWORD_ELSE  reduce 37
+	KEYWORD_FI  reduce 37
+	OP_ADD  reduce 37
+	OP_SUB  reduce 37
+	OP_MUL  reduce 37
+	OP_DIVIDE  reduce 37
+	OP_LESSTHAN  reduce 37
+	OP_LESSTHANEQUAL  reduce 37
+	OP_EQUAL  reduce 37
+	OP_DOT  reduce 37
+	SYM_RBRACE  reduce 37
+	SYM_RPAREN  reduce 37
+	SYM_SEMICOLON  reduce 37
+	SYM_SCOPE_OP  reduce 37
+
+
+state 69
+	expr : KEYWORD_WHILE . valExpr KEYWORD_LOOP expr KEYWORD_POOL  (25)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	valExpr  goto 84
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 70
+	expr : KEYWORD_IF . valExpr KEYWORD_THEN expr KEYWORD_ELSE expr KEYWORD_FI  (24)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	valExpr  goto 85
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 71
+	expr : KEYWORD_LET . attribute attribs KEYWORD_IN expr  (27)
+
+	ID  shift 86
+	.  error
+
+	attribute  goto 87
+
+
+state 72
+	expr : KEYWORD_CASE . valExpr KEYWORD_OF cases KEYWORD_ESAC  (28)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	valExpr  goto 88
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 73
+	expr : KEYWORD_NEW . TYPE  (29)
+	valExpr1 : KEYWORD_NEW . TYPE  (35)
+
+	TYPE  shift 89
+	.  error
+
+
+state 74
+	expr : KEYWORD_ISVOID . expr  (30)
+
+	ID  shift 68
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_WHILE  shift 69
+	KEYWORD_IF  shift 70
+	KEYWORD_LET  shift 71
+	KEYWORD_CASE  shift 72
+	KEYWORD_NEW  shift 73
+	KEYWORD_ISVOID  shift 74
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_LBRACE  shift 75
+	SYM_LPAREN  shift 76
+	.  error
+
+	expr  goto 90
+	valExpr  goto 78
+	functionCall  goto 79
+	valExpr1  goto 46
+
+
+state 75
+	expr : SYM_LBRACE . statements SYM_RBRACE  (26)
+
+	ID  shift 68
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_WHILE  shift 69
+	KEYWORD_IF  shift 70
+	KEYWORD_LET  shift 71
+	KEYWORD_CASE  shift 72
+	KEYWORD_NEW  shift 73
+	KEYWORD_ISVOID  shift 74
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_LBRACE  shift 75
+	SYM_LPAREN  shift 76
+	.  error
+
+	expr  goto 91
+	valExpr  goto 78
+	functionCall  goto 79
+	statements  goto 92
+	valExpr1  goto 46
+	statement  goto 93
+
+
+state 76
+	expr : SYM_LPAREN . expr SYM_RPAREN  (31)
+
+	ID  shift 68
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_WHILE  shift 69
+	KEYWORD_IF  shift 70
+	KEYWORD_LET  shift 71
+	KEYWORD_CASE  shift 72
+	KEYWORD_NEW  shift 73
+	KEYWORD_ISVOID  shift 74
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_LBRACE  shift 75
+	SYM_LPAREN  shift 76
+	.  error
+
+	expr  goto 94
+	valExpr  goto 78
+	functionCall  goto 79
+	valExpr1  goto 46
+
+
+state 77
+	method : ID SYM_LPAREN formalparams SYM_RPAREN SYM_COLON TYPE SYM_LBRACE expr . SYM_RBRACE  (12)
+	expr : expr . scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN  (22)
+	scope : .  (60)
+
+	SYM_RBRACE  shift 95
+	SYM_SCOPE_OP  shift 96
+	OP_DOT  reduce 60
+
+	scope  goto 97
+
+
+state 78
+	expr : valExpr .  (32)
+
+	.  reduce 32
+
+
+79: reduce/reduce conflict (reduce 23, reduce 36) on KEYWORD_POOL
+79: reduce/reduce conflict (reduce 23, reduce 36) on KEYWORD_ELSE
+79: reduce/reduce conflict (reduce 23, reduce 36) on KEYWORD_FI
+79: reduce/reduce conflict (reduce 23, reduce 36) on OP_DOT
+79: reduce/reduce conflict (reduce 23, reduce 36) on SYM_RBRACE
+79: reduce/reduce conflict (reduce 23, reduce 36) on SYM_RPAREN
+79: reduce/reduce conflict (reduce 23, reduce 36) on SYM_SEMICOLON
+79: reduce/reduce conflict (reduce 23, reduce 36) on SYM_SCOPE_OP
+state 79
+	expr : functionCall .  (23)
+	valExpr1 : functionCall .  (36)
+
+	KEYWORD_POOL  reduce 23
+	KEYWORD_ELSE  reduce 23
+	KEYWORD_FI  reduce 23
+	OP_ADD  reduce 36
+	OP_SUB  reduce 36
+	OP_MUL  reduce 36
+	OP_DIVIDE  reduce 36
+	OP_LESSTHAN  reduce 36
+	OP_LESSTHANEQUAL  reduce 36
+	OP_EQUAL  reduce 36
+	OP_DOT  reduce 23
+	SYM_RBRACE  reduce 23
+	SYM_RPAREN  reduce 23
+	SYM_SEMICOLON  reduce 23
+	SYM_SCOPE_OP  reduce 23
+
+
+state 80
+	arg : SYM_COMMA . valExpr arg  (63)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	valExpr  goto 98
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 81
+	arguments : valExpr arg .  (61)
+
+	.  reduce 61
+
+
+state 82
+	functionCall : ID SYM_LPAREN arguments SYM_RPAREN .  (33)
+
+	.  reduce 33
+
+
+state 83
+	expr : ID SYM_ASSIGNMENT . valExpr  (21)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	valExpr  goto 99
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 84
+	expr : KEYWORD_WHILE valExpr . KEYWORD_LOOP expr KEYWORD_POOL  (25)
+
+	KEYWORD_LOOP  shift 100
+	.  error
+
+
+state 85
+	expr : KEYWORD_IF valExpr . KEYWORD_THEN expr KEYWORD_ELSE expr KEYWORD_FI  (24)
+
+	KEYWORD_THEN  shift 101
+	.  error
+
+
+state 86
+	attribute : ID . SYM_COLON TYPE initialization  (18)
+
+	SYM_COLON  shift 19
+	.  error
+
+
+state 87
+	expr : KEYWORD_LET attribute . attribs KEYWORD_IN expr  (27)
+	attribs : .  (57)
+
+	SYM_COMMA  shift 102
+	KEYWORD_IN  reduce 57
+
+	attribs  goto 103
+
+
+state 88
+	expr : KEYWORD_CASE valExpr . KEYWORD_OF cases KEYWORD_ESAC  (28)
+
+	KEYWORD_OF  shift 104
+	.  error
+
+
+89: reduce/reduce conflict (reduce 29, reduce 35) on KEYWORD_POOL
+89: reduce/reduce conflict (reduce 29, reduce 35) on KEYWORD_ELSE
+89: reduce/reduce conflict (reduce 29, reduce 35) on KEYWORD_FI
+89: reduce/reduce conflict (reduce 29, reduce 35) on OP_DOT
+89: reduce/reduce conflict (reduce 29, reduce 35) on SYM_RBRACE
+89: reduce/reduce conflict (reduce 29, reduce 35) on SYM_RPAREN
+89: reduce/reduce conflict (reduce 29, reduce 35) on SYM_SEMICOLON
+89: reduce/reduce conflict (reduce 29, reduce 35) on SYM_SCOPE_OP
+state 89
+	expr : KEYWORD_NEW TYPE .  (29)
+	valExpr1 : KEYWORD_NEW TYPE .  (35)
+
+	KEYWORD_POOL  reduce 29
+	KEYWORD_ELSE  reduce 29
+	KEYWORD_FI  reduce 29
+	OP_ADD  reduce 35
+	OP_SUB  reduce 35
+	OP_MUL  reduce 35
+	OP_DIVIDE  reduce 35
+	OP_LESSTHAN  reduce 35
+	OP_LESSTHANEQUAL  reduce 35
+	OP_EQUAL  reduce 35
+	OP_DOT  reduce 29
+	SYM_RBRACE  reduce 29
+	SYM_RPAREN  reduce 29
+	SYM_SEMICOLON  reduce 29
+	SYM_SCOPE_OP  reduce 29
+
+
+90: reduce/reduce conflict (reduce 30, reduce 60) on OP_DOT
+90: shift/reduce conflict (shift 96, reduce 30) on SYM_SCOPE_OP
+state 90
+	expr : expr . scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN  (22)
+	expr : KEYWORD_ISVOID expr .  (30)
+	scope : .  (60)
+
+	SYM_SCOPE_OP  shift 96
+	KEYWORD_POOL  reduce 30
+	KEYWORD_ELSE  reduce 30
+	KEYWORD_FI  reduce 30
+	OP_DOT  reduce 30
+	SYM_RBRACE  reduce 30
+	SYM_RPAREN  reduce 30
+	SYM_SEMICOLON  reduce 30
+
+	scope  goto 97
+
+
+state 91
+	expr : expr . scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN  (22)
+	statement : expr . SYM_SEMICOLON  (67)
+	scope : .  (60)
+
+	SYM_SEMICOLON  shift 105
+	SYM_SCOPE_OP  shift 96
+	OP_DOT  reduce 60
+
+	scope  goto 97
+
+
+state 92
+	expr : SYM_LBRACE statements . SYM_RBRACE  (26)
+
+	SYM_RBRACE  shift 106
+	.  error
+
+
+state 93
+	statements : statement . statements  (65)
+	statements : statement .  (66)
+
+	ID  shift 68
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_WHILE  shift 69
+	KEYWORD_IF  shift 70
+	KEYWORD_LET  shift 71
+	KEYWORD_CASE  shift 72
+	KEYWORD_NEW  shift 73
+	KEYWORD_ISVOID  shift 74
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_LBRACE  shift 75
+	SYM_LPAREN  shift 76
+	SYM_RBRACE  reduce 66
+
+	expr  goto 91
+	valExpr  goto 78
+	functionCall  goto 79
+	statements  goto 107
+	valExpr1  goto 46
+	statement  goto 93
+
+
+state 94
+	expr : expr . scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN  (22)
+	expr : SYM_LPAREN expr . SYM_RPAREN  (31)
+	scope : .  (60)
+
+	SYM_RPAREN  shift 108
+	SYM_SCOPE_OP  shift 96
+	OP_DOT  reduce 60
+
+	scope  goto 97
+
+
+state 95
+	method : ID SYM_LPAREN formalparams SYM_RPAREN SYM_COLON TYPE SYM_LBRACE expr SYM_RBRACE .  (12)
+
+	.  reduce 12
+
+
+state 96
+	scope : SYM_SCOPE_OP . TYPE  (59)
+
+	TYPE  shift 109
+	.  error
+
+
+state 97
+	expr : expr scope . OP_DOT ID SYM_LPAREN arguments SYM_RPAREN  (22)
+
+	OP_DOT  shift 110
+	.  error
+
+
+state 98
+	arg : SYM_COMMA valExpr . arg  (63)
+	arg : .  (64)
+
+	SYM_COMMA  shift 80
+	SYM_RPAREN  reduce 64
+
+	arg  goto 111
+
+
+state 99
+	expr : ID SYM_ASSIGNMENT valExpr .  (21)
+
+	.  reduce 21
+
+
+state 100
+	expr : KEYWORD_WHILE valExpr KEYWORD_LOOP . expr KEYWORD_POOL  (25)
+
+	ID  shift 68
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_WHILE  shift 69
+	KEYWORD_IF  shift 70
+	KEYWORD_LET  shift 71
+	KEYWORD_CASE  shift 72
+	KEYWORD_NEW  shift 73
+	KEYWORD_ISVOID  shift 74
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_LBRACE  shift 75
+	SYM_LPAREN  shift 76
+	.  error
+
+	expr  goto 112
+	valExpr  goto 78
+	functionCall  goto 79
+	valExpr1  goto 46
+
+
+state 101
+	expr : KEYWORD_IF valExpr KEYWORD_THEN . expr KEYWORD_ELSE expr KEYWORD_FI  (24)
+
+	ID  shift 68
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_WHILE  shift 69
+	KEYWORD_IF  shift 70
+	KEYWORD_LET  shift 71
+	KEYWORD_CASE  shift 72
+	KEYWORD_NEW  shift 73
+	KEYWORD_ISVOID  shift 74
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_LBRACE  shift 75
+	SYM_LPAREN  shift 76
+	.  error
+
+	expr  goto 113
+	valExpr  goto 78
+	functionCall  goto 79
+	valExpr1  goto 46
+
+
+state 102
+	attribs : SYM_COMMA . attribute attribs  (58)
+
+	ID  shift 86
+	.  error
+
+	attribute  goto 114
+
+
+state 103
+	expr : KEYWORD_LET attribute attribs . KEYWORD_IN expr  (27)
+
+	KEYWORD_IN  shift 115
+	.  error
+
+
+state 104
+	expr : KEYWORD_CASE valExpr KEYWORD_OF . cases KEYWORD_ESAC  (28)
+
+	ID  shift 116
+	.  error
+
+	cases  goto 117
+	caze  goto 118
+
+
+state 105
+	statement : expr SYM_SEMICOLON .  (67)
+
+	.  reduce 67
+
+
+state 106
+	expr : SYM_LBRACE statements SYM_RBRACE .  (26)
+
+	.  reduce 26
+
+
+state 107
+	statements : statement statements .  (65)
+
+	.  reduce 65
+
+
+state 108
+	expr : SYM_LPAREN expr SYM_RPAREN .  (31)
+
+	.  reduce 31
+
+
+state 109
+	scope : SYM_SCOPE_OP TYPE .  (59)
+
+	.  reduce 59
+
+
+state 110
+	expr : expr scope OP_DOT . ID SYM_LPAREN arguments SYM_RPAREN  (22)
+
+	ID  shift 119
+	.  error
+
+
+state 111
+	arg : SYM_COMMA valExpr arg .  (63)
+
+	.  reduce 63
+
+
+state 112
+	expr : expr . scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN  (22)
+	expr : KEYWORD_WHILE valExpr KEYWORD_LOOP expr . KEYWORD_POOL  (25)
+	scope : .  (60)
+
+	KEYWORD_POOL  shift 120
+	SYM_SCOPE_OP  shift 96
+	OP_DOT  reduce 60
+
+	scope  goto 97
+
+
+state 113
+	expr : expr . scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN  (22)
+	expr : KEYWORD_IF valExpr KEYWORD_THEN expr . KEYWORD_ELSE expr KEYWORD_FI  (24)
+	scope : .  (60)
+
+	KEYWORD_ELSE  shift 121
+	SYM_SCOPE_OP  shift 96
+	OP_DOT  reduce 60
+
+	scope  goto 97
+
+
+state 114
+	attribs : SYM_COMMA attribute . attribs  (58)
+	attribs : .  (57)
+
+	SYM_COMMA  shift 102
+	KEYWORD_IN  reduce 57
+
+	attribs  goto 122
+
+
+state 115
+	expr : KEYWORD_LET attribute attribs KEYWORD_IN . expr  (27)
+
+	ID  shift 68
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_WHILE  shift 69
+	KEYWORD_IF  shift 70
+	KEYWORD_LET  shift 71
+	KEYWORD_CASE  shift 72
+	KEYWORD_NEW  shift 73
+	KEYWORD_ISVOID  shift 74
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_LBRACE  shift 75
+	SYM_LPAREN  shift 76
+	.  error
+
+	expr  goto 123
+	valExpr  goto 78
+	functionCall  goto 79
+	valExpr1  goto 46
+
+
+state 116
+	caze : ID . SYM_COLON TYPE OP_CASE_COMP valExpr SYM_SEMICOLON  (56)
+
+	SYM_COLON  shift 124
+	.  error
+
+
+state 117
+	expr : KEYWORD_CASE valExpr KEYWORD_OF cases . KEYWORD_ESAC  (28)
+
+	KEYWORD_ESAC  shift 125
+	.  error
+
+
+state 118
+	cases : caze . cases  (54)
+	cases : caze .  (55)
+
+	ID  shift 116
+	KEYWORD_ESAC  reduce 55
+
+	cases  goto 126
+	caze  goto 118
+
+
+state 119
+	expr : expr scope OP_DOT ID . SYM_LPAREN arguments SYM_RPAREN  (22)
+
+	SYM_LPAREN  shift 127
+	.  error
+
+
+state 120
+	expr : KEYWORD_WHILE valExpr KEYWORD_LOOP expr KEYWORD_POOL .  (25)
+
+	.  reduce 25
+
+
+state 121
+	expr : KEYWORD_IF valExpr KEYWORD_THEN expr KEYWORD_ELSE . expr KEYWORD_FI  (24)
+
+	ID  shift 68
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_WHILE  shift 69
+	KEYWORD_IF  shift 70
+	KEYWORD_LET  shift 71
+	KEYWORD_CASE  shift 72
+	KEYWORD_NEW  shift 73
+	KEYWORD_ISVOID  shift 74
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_LBRACE  shift 75
+	SYM_LPAREN  shift 76
+	.  error
+
+	expr  goto 128
+	valExpr  goto 78
+	functionCall  goto 79
+	valExpr1  goto 46
+
+
+state 122
+	attribs : SYM_COMMA attribute attribs .  (58)
+
+	.  reduce 58
+
+
+123: reduce/reduce conflict (reduce 27, reduce 60) on OP_DOT
+123: shift/reduce conflict (shift 96, reduce 27) on SYM_SCOPE_OP
+state 123
+	expr : expr . scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN  (22)
+	expr : KEYWORD_LET attribute attribs KEYWORD_IN expr .  (27)
+	scope : .  (60)
+
+	SYM_SCOPE_OP  shift 96
+	KEYWORD_POOL  reduce 27
+	KEYWORD_ELSE  reduce 27
+	KEYWORD_FI  reduce 27
+	OP_DOT  reduce 27
+	SYM_RBRACE  reduce 27
+	SYM_RPAREN  reduce 27
+	SYM_SEMICOLON  reduce 27
+
+	scope  goto 97
+
+
+state 124
+	caze : ID SYM_COLON . TYPE OP_CASE_COMP valExpr SYM_SEMICOLON  (56)
+
+	TYPE  shift 129
+	.  error
+
+
+state 125
+	expr : KEYWORD_CASE valExpr KEYWORD_OF cases KEYWORD_ESAC .  (28)
+
+	.  reduce 28
+
+
+state 126
+	cases : caze cases .  (54)
+
+	.  reduce 54
+
+
+state 127
+	expr : expr scope OP_DOT ID SYM_LPAREN . arguments SYM_RPAREN  (22)
+	arguments : .  (62)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	SYM_RPAREN  reduce 62
+
+	valExpr  goto 64
+	arguments  goto 130
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 128
+	expr : expr . scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN  (22)
+	expr : KEYWORD_IF valExpr KEYWORD_THEN expr KEYWORD_ELSE expr . KEYWORD_FI  (24)
+	scope : .  (60)
+
+	KEYWORD_FI  shift 131
+	SYM_SCOPE_OP  shift 96
+	OP_DOT  reduce 60
+
+	scope  goto 97
+
+
+state 129
+	caze : ID SYM_COLON TYPE . OP_CASE_COMP valExpr SYM_SEMICOLON  (56)
+
+	OP_CASE_COMP  shift 132
+	.  error
+
+
+state 130
+	expr : expr scope OP_DOT ID SYM_LPAREN arguments . SYM_RPAREN  (22)
+
+	SYM_RPAREN  shift 133
+	.  error
+
+
+state 131
+	expr : KEYWORD_IF valExpr KEYWORD_THEN expr KEYWORD_ELSE expr KEYWORD_FI .  (24)
+
+	.  reduce 24
+
+
+state 132
+	caze : ID SYM_COLON TYPE OP_CASE_COMP . valExpr SYM_SEMICOLON  (56)
+
+	ID  shift 36
+	INTEGER  shift 37
+	STRING_LITERAL  shift 38
+	KEYWORD_NEW  shift 39
+	KEYWORD_NOT  shift 40
+	KEYWORD_TRUE  shift 41
+	KEYWORD_FALSE  shift 42
+	OP_INT_NOT  shift 43
+	.  error
+
+	valExpr  goto 134
+	functionCall  goto 45
+	valExpr1  goto 46
+
+
+state 133
+	expr : expr scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN .  (22)
+
+	.  reduce 22
+
+
+state 134
+	caze : ID SYM_COLON TYPE OP_CASE_COMP valExpr . SYM_SEMICOLON  (56)
+
+	SYM_SEMICOLON  shift 135
+	.  error
+
+
+state 135
+	caze : ID SYM_COLON TYPE OP_CASE_COMP valExpr SYM_SEMICOLON .  (56)
+
+	.  reduce 56
+
+
+State 79 contains 8 reduce/reduce conflicts.
+State 89 contains 8 reduce/reduce conflicts.
+State 90 contains 1 shift/reduce conflict, 1 reduce/reduce conflict.
+State 123 contains 1 shift/reduce conflict, 1 reduce/reduce conflict.
+
+
+46 terminals, 29 nonterminals
+68 grammar rules, 136 states

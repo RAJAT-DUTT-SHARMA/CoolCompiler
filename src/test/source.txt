@@ -1,0 +1,17 @@
+class Test inherits TYs { 
+	asd : String <- "sds" ;
+	doubleIt(a:Int) : Int {
+		{
+		let a:Int<-5,b:String  in "asdas";
+		if a<b then "asd" else "as " fi ;
+		while a<=b loop { doubleIt(a);} pool;
+		}
+	};
+}
+class DD {
+	object: Test ;
+	dd:Int <- 7;
+	function() : Int {
+		dd@Test.doubleIt(dd)
+	};
+}
