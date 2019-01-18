@@ -3,22 +3,25 @@ Compiler for Cool language with Stanford specification
 
 
 Work Done : 
-Designed grammar for cool language.
-Generated parser for cool language using BYACC/J parser generator.  
-Generated lexer with interface fro parser to interact with it using Jflex lexer generator.
+• Designed grammar for cool language.
+• Generated parser for cool language using BYACC/J parser generator.  
+• Generated lexer with interface fro parser to interact with it using Jflex lexer generator.
+• Cool Semantic Analyser
+• Code Generation for some constructs
 
-Parser
-
+PARSER :: 
 The parser is designed for cool language and I used BYACC/J parser generator to generate LALR parser from the grammar mentioned below :
 
-Grammar used : 
+  Grammar used :
+  
+         0  $accept : program $end
 
-      1  program : classes
+         1  program : classes
 
-      2  classes : clazz classes
-      3          | clazz
+         2  classes : clazz classes
+         3          | clazz
 
-      4  clazz : KEYWORD_CLASS TYPE classdefinition
+         4  clazz : KEYWORD_CLASS TYPE classdefinition
 
          5  classdefinition : classbody
          6                  | KEYWORD_INHERITS TYPE classbody
@@ -49,83 +52,64 @@ Grammar used :
         21  expr : ID SYM_ASSIGNMENT valExpr
         22       | expr scope OP_DOT ID SYM_LPAREN arguments SYM_RPAREN
         23       | functionCall
-        24       | KEYWORD_IF boolExpr KEYWORD_THEN expr KEYWORD_ELSE expr KEYWORD_FI
-        25       | KEYWORD_WHILE boolExpr KEYWORD_LOOP expr KEYWORD_POOL
+        24       | KEYWORD_IF valExpr KEYWORD_THEN expr KEYWORD_ELSE expr KEYWORD_FI
+        25       | KEYWORD_WHILE valExpr KEYWORD_LOOP expr KEYWORD_POOL
         26       | SYM_LBRACE statements SYM_RBRACE
         27       | KEYWORD_LET attribute attribs KEYWORD_IN expr
         28       | KEYWORD_CASE valExpr KEYWORD_OF cases KEYWORD_ESAC
         29       | KEYWORD_NEW TYPE
         30       | KEYWORD_ISVOID expr
         31       | SYM_LPAREN expr SYM_RPAREN
-        32       | ID
-        33       | STRING_LITERAL
+        32       | valExpr
 
-        34  functionCall : ID SYM_LPAREN arguments SYM_RPAREN
+        33  functionCall : ID SYM_LPAREN arguments SYM_RPAREN
 
-        35  valExpr : arithematicExpr
-        36          | boolExpr
-        37          | KEYWORD_NEW TYPE
-        38          | functionCall
-        39          | ID
-        40          | STRING_LITERAL
+        34  valExpr : valExpr1 valExprRest
 
-        41  arithematicExpr : arithExpr1 arithExprRest
+        35  valExpr1 : KEYWORD_NEW TYPE
+        36           | functionCall
+        37           | ID
+        38           | STRING_LITERAL
+        39           | INTEGER
+        40           | KEYWORD_TRUE
+        41           | KEYWORD_FALSE
+        42           | OP_INT_NOT valExpr1
+        43           | KEYWORD_NOT valExpr1
 
-        42  arithExpr1 : INTEGER
-        43             | OP_INT_NOT INTEGER
+        44  valExprRest : arithematicOperator valExpr
+        45              | comparisonOperator valExpr
+        46              |
 
-        44  arithExprRest : arithematicOperator arithematicExpr
-        45                |
+        47  arithematicOperator : OP_ADD
+        48                      | OP_MUL
+        49                      | OP_DIVIDE
+        50                      | OP_SUB
 
-        46  arithematicOperator : OP_ADD
-        47                      | OP_MUL
-        48                      | OP_DIVIDE
-        49                      | OP_SUB
+        51  comparisonOperator : OP_LESSTHAN
+        52                     | OP_LESSTHANEQUAL
+        53                     | OP_EQUAL
 
-        50  comparisonExpr : comparisonExpr1 comparisonExprRest
+        54  cases : caze cases
+        55        | caze
 
-        51  comparisonExpr1 : INTEGER
-        52                  | STRING_LITERAL
-        53                  | booleanVal
-        54                  | ID
+        56  caze : ID SYM_COLON TYPE OP_CASE_COMP valExpr SYM_SEMICOLON
 
-        55  comparisonExprRest : comparisonOperator comparisonExpr
-        56                     | comparisonOperator comparisonExpr1
+        57  attribs :
+        58          | SYM_COMMA attribute attribs
 
-        57  booleanVal : KEYWORD_TRUE
-        58             | KEYWORD_FALSE
+        59  scope : SYM_SCOPE_OP TYPE
+        60        |
 
-        59  comparisonOperator : OP_LESSTHAN
-        60                     | OP_LESSTHANEQUAL
-        61                     | OP_EQUAL
+        61  arguments : valExpr arg
+        62            |
 
-        62  booleanExpr : KEYWORD_NOT booleanExpr
-        63              | booleanVal
+        63  arg : SYM_COMMA valExpr arg
+        64      |
 
-        64  boolExpr : booleanExpr
-        65           | comparisonExpr
+        65  statements : statement statements
+        66             | statement
 
-        66  cases : caze cases
-        67        | caze
-
-        68  caze : ID SYM_COLON TYPE OP_CASE_COMP valExpr SYM_SEMICOLON
-
-        69  attribs :
-        70          | SYM_COMMA attribute attribs
-
-        71  scope : SYM_SCOPE_OP TYPE
-        72        |
-
-        73  arguments : valExpr arg
-        74            |
-
-        75  arg : SYM_COMMA valExpr arg
-        76      |
-
-        77  statements : statement statements
-        78             | statement
-
-        79  statement : expr SYM_SEMICOLON
+        67  statement : expr SYM_SEMICOLON
 
 Terminals : All words in capital letters represent terminals . 
 
@@ -143,3 +127,29 @@ Parser Lexer Interface :
 
 Error Handling : 
 Not done very elegantly . The parser will just report syntax error . The particular statement with error can be predicted by tracking upto which line the tokens have been printed. The parser doesn’t continue parsing after the error occurs.   
+
+
+
+TYPE CHECKER ( SEMANTIC ANALYSER ) :
+      • Type Checking of most of Cool language constructs .
+      • Error reporting via suitable exceptions while type checking , with localization
+      of error upto feature level .
+      • Generating sequence of actions performed while type checking the program.
+      Features Not Implemented :
+      • Inheritance
+      • self and SELF_TYPE
+      
+Input to Type Checker :
+      • AST from parser
+
+Output from Type Checker :
+      • Sequence of actions performes while type checking various Cool language
+      constructs.
+      • Exceptions with output representing the error locality and type and cause .
+
+HOW TO USE :
+      • Run the jar file using command :
+
+      java -jar CoolSemanticAnalyser.jar source_code_filename.txt
+
+
